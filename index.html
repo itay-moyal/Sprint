@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minesweeper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Patrick+Hand+SC&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+
+  <body onload="init()">
+    <h1>Minesweeper</h1>
+    <button onclick="init()" class="restart"></button>
+    <div class="board-container"></div>
+    <div class="buttons">
+      <button onclick="onSetLevel(4,2)" class="button btn1">Easy</button>
+      <button onclick="onSetLevel(8,12)" class="button btn2">Medium</button>
+      <button onclick="onSetLevel(12,32)" class="button btn3">Hard</button>
+    </div>
+    <div class="footer-box">
+      <p class="footer">©2025 Itay Moyal</p>
+    </div>
+    <script src="js/main.js"></script>
+  </body>
+</html>

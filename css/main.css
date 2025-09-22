@@ -1,0 +1,76 @@
+body {
+  background: linear-gradient(to right, rgb(201, 248, 239), #f5d2d2);
+  font-family: 'Patrick Hand SC', cursive;
+  text-align: center;
+}
+
+h1 {
+  font-family: 'Patrick Hand SC', cursive;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 50px;
+}
+
+.board-container {
+  margin-bottom: 20px;
+}
+
+table {
+  margin: auto;
+  border: cornsilk 2px solid;
+  border-radius: 5px;
+}
+
+td {
+  height: 40px;
+  width: 40px;
+  border: cornsilk 2px solid;
+}
+
+td:hover {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(83, 110, 100, 0.15);
+  cursor: pointer;
+}
+
+.clicked {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(83, 110, 100, 0.15);
+  cursor: not-allowed;
+}
+
+.restart {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.footer-box {
+  /* display: flex; */
+  position: fixed;
+  margin-top: 50px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgb(255, 255, 255, 0.15);
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.button {
+  font-family: 'Patrick Hand SC', cursive;
+  font-size: 20px;
+  background-color: rgb(255, 255, 255, 0.15);
+  /* background: linear-gradient(to right, rgb(201, 248, 239), #f5d2d2); */
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 100px;
+}
+
+.button:hover {
+  background-color: rgb(255, 255, 255, 0.5);
+}
