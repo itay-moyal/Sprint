@@ -14,7 +14,7 @@ var gGame = {
   isOn: false,
   revealedCount: 0,
   markedCount: 0,
-  secsPassed: 0,
+  secsPassed: null,
 }
 var gLevel = {
   SIZE: 4,
@@ -22,7 +22,6 @@ var gLevel = {
 }
 var gBoard
 var gStartTime = null
-var gTimerInterval = null
 var gLives
 var gTimerCounter
 
@@ -47,7 +46,7 @@ function init() {
   gBoard = buildBoard(gLevel.SIZE)
   renderBoard(gBoard, '.board-container')
 
-  clearInterval(gTimerInterval)
+  clearInterval(gGame.secsPassed)
 }
 
 function buildBoard(size) {
@@ -168,7 +167,7 @@ function onCellClicked(elCell, i, j) {
   gTimerCounter++
   if (gTimerCounter === 1) {
     gStartTime = new Date()
-    gTimerInterval = setInterval(updateTimer, 37)
+    gGame.secsPassed = setInterval(updateTimer, 37)
   }
   var currCell = gBoard[i][j]
 
@@ -235,13 +234,13 @@ function checkGameOver() {
   if (gGame.revealedCount === cells && gGame.markedCount === gLevel.MINES) {
     elRestart.innerText = '🥳'
     gGame.isOn = false
-    clearInterval(gTimerInterval)
+    clearInterval(gGame.secsPassed)
 
     return
   }
   if (!gGame.isOn) {
     elRestart.innerText = '😞'
-    clearInterval(gTimerInterval)
+    clearInterval(gGame.secsPassed)
 
     return
   }
