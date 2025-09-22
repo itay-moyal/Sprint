@@ -5,9 +5,6 @@ body {
 }
 
 h1 {
-  font-family: 'Patrick Hand SC', cursive;
-  font-style: normal;
-  font-weight: 400;
   font-size: 50px;
 }
 
@@ -55,7 +52,6 @@ td:hover {
   left: 0;
   bottom: 0;
   width: 100%;
-  text-align: center;
 }
 
 .button {

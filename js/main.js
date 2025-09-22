@@ -16,23 +16,38 @@ var gGame = {
   markedCount: 0,
   secsPassed: 0,
 }
-// This is an object by which the board size is set
-// (in this case: 4x4 board and how  many mines to place)
 var gLevel = {
   SIZE: 4,
   MINES: 2,
 }
 var gBoard
+var gStartTime = null
+var gTimerInterval = null
 var gLives
+var gTimerCounter
+
+// TO DO !!! add to cell clicks the glives logic,
+// if glives > 0 then things happen else game.ison = false
+// need to think.
 
 function init() {
+  gTimerCounter = 0
   gGame.revealedCount = 0
   gGame.markedCount = 0
+  gLives = 3
+
+  var elLives = document.querySelector('.lives-count')
   var elRestart = document.querySelector('.restart')
-  elRestart.innerHTML = '😃'
+  var elTimer = document.querySelector('.timer span')
+  elRestart.innerText = '😃'
+  elTimer.innerText = '00 : 00'
+  elLives.innerText = gLives
+
   gGame.isOn = true
   gBoard = buildBoard(gLevel.SIZE)
   renderBoard(gBoard, '.board-container')
+
+  clearInterval(gTimerInterval)
 }
 
 function buildBoard(size) {
@@ -150,6 +165,11 @@ function getEmptyRandomLocation(board) {
 
 function onCellClicked(elCell, i, j) {
   if (!gGame.isOn) return
+  gTimerCounter++
+  if (gTimerCounter === 1) {
+    gStartTime = new Date()
+    gTimerInterval = setInterval(updateTimer, 37)
+  }
   var currCell = gBoard[i][j]
 
   if (currCell.isMarked) return
@@ -215,10 +235,14 @@ function checkGameOver() {
   if (gGame.revealedCount === cells && gGame.markedCount === gLevel.MINES) {
     elRestart.innerText = '🥳'
     gGame.isOn = false
+    clearInterval(gTimerInterval)
+
     return
   }
   if (!gGame.isOn) {
     elRestart.innerText = '😞'
+    clearInterval(gTimerInterval)
+
     return
   }
 }
@@ -270,4 +294,14 @@ function getRandomIntInclusive(min, max) {
   const minCeiled = Math.ceil(min)
   const maxFloored = Math.floor(max)
   return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled)
+}
+
+function updateTimer() {
+  const elTimer = document.querySelector('.timer span')
+  const elapsedTime = Date.now() - gStartTime
+  const seconds = String(Math.floor((elapsedTime % (1000 * 60)) / 1000))
+  const minutes = String(
+    Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60))
+  )
+  elTimer.innerHTML = `${minutes.padStart(2, 0)} : ${seconds.padStart(2, 0)}`
 }
