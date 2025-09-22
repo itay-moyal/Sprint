@@ -48,7 +48,6 @@ td:hover {
 }
 
 .footer-box {
-  /* display: flex; */
   position: fixed;
   margin-top: 50px;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
@@ -63,7 +62,6 @@ td:hover {
   font-family: 'Patrick Hand SC', cursive;
   font-size: 20px;
   background-color: rgb(255, 255, 255, 0.15);
-  /* background: linear-gradient(to right, rgb(201, 248, 239), #f5d2d2); */
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-color: white;
   border-radius: 5px;
