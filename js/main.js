@@ -23,34 +23,50 @@ var gLevel = {
 var gBoard
 var gStartTime = null
 var gLives
-var gTimerCounter
+var gStartGame
+var gSafeCounter
 
 // TO DO !!! add to cell clicks the glives logic,
 // if glives > 0 then things happen else game.ison = false
 // need to think.
 
+// Starting / Restarting game
 function init() {
-  gTimerCounter = 0
-  gGame.revealedCount = 0
-  gGame.markedCount = 0
-  gLives = 3
+  resetGameStats()
+  resetDOM()
 
-  var elLives = document.querySelector('.lives-count')
-  var elRestart = document.querySelector('.restart')
-  var elTimer = document.querySelector('.timer span')
-  elRestart.innerText = '😃'
-  elTimer.innerText = '00 : 00'
-  elLives.innerText = gLives
-
-  gGame.isOn = true
   gBoard = buildBoard(gLevel.SIZE)
   renderBoard(gBoard, '.board-container')
 
   clearInterval(gGame.secsPassed)
 }
 
+// Sets all the stats to starting point
+function resetGameStats() {
+  gGame.isOn = true
+  gStartGame = 0
+  gGame.revealedCount = 0
+  gGame.markedCount = 0
+  gLives = 3
+  gSafeCounter = 3
+}
+
+// Resets stats on DOM
+function resetDOM() {
+  var elCounter = document.querySelector('.safe-text span')
+  var elLives = document.querySelector('.lives-count')
+  var elRestart = document.querySelector('.restart')
+  var elTimer = document.querySelector('.timer span')
+
+  elCounter.innerText = gSafeCounter
+  elLives.innerText = gLives
+  elRestart.innerText = '😃'
+  elTimer.innerText = '00 : 00'
+}
+
+// Model
 function buildBoard(size) {
-  //     Builds the board
+  // Builds the board
   // Set some mines
   // Call setMinesNegsCount()
   // Return the created board
@@ -70,10 +86,10 @@ function buildBoard(size) {
     }
   }
   addMines(board)
-  setMinesNegsCount(board)
   return board
 }
 
+// DOM
 function renderBoard(mat, selector) {
   var strHTML = '<table><tbody>'
   for (var i = 0; i < mat.length; i++) {
@@ -86,17 +102,17 @@ function renderBoard(mat, selector) {
       onclick="onCellClicked(this,${i},${j})" 
       oncontextmenu="onCellMarked(this,${i},${j});return false;">`
       //   if (cell.gameElement !== MINE) strHTML += cell.minesAroundCount
-      if (cell.gameElement === MINE) strHTML += MINE
+      if (cell.gameElement === MINE) strHTML += 'X'
       strHTML += `</td>`
     }
     strHTML += '</tr>'
   }
   strHTML += '</tbody></table>'
-
   const elContainer = document.querySelector(selector)
   elContainer.innerHTML = strHTML
 }
 
+// Count mines around each cell
 function mineCounter(rowIdx, colIdx, board) {
   var mineCount = 0
   for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
@@ -113,11 +129,8 @@ function mineCounter(rowIdx, colIdx, board) {
   return mineCount
 }
 
+// sets minesAroundCount in each cell
 function setMinesNegsCount(board) {
-  //     Count mines around each cell
-  // and set the cell's
-  // minesAroundCount.
-
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board[0].length; j++) {
       var currCell = board[i][j]
@@ -130,6 +143,7 @@ function setMinesNegsCount(board) {
   return counter
 }
 
+// Placing mines randomly
 function addMines(board) {
   var activeMines = 0
   while (activeMines < gLevel.MINES) {
@@ -147,11 +161,13 @@ function addMines(board) {
   setMinesNegsCount(board)
 }
 
+// Gets empty random location
 function getEmptyRandomLocation(board) {
   const emptyCells = []
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board[i].length; j++) {
-      if (board[i][j].gameElement !== MINE) {
+      var cell = board[i][j]
+      if (cell.gameElement !== MINE && !cell.isRevealed) {
         emptyCells.push({ i, j })
         // console.log(emptyCells)
       }
@@ -164,10 +180,10 @@ function getEmptyRandomLocation(board) {
 
 function onCellClicked(elCell, i, j) {
   if (!gGame.isOn) return
-  gTimerCounter++
-  if (gTimerCounter === 1) {
+  gStartGame++
+  if (gStartGame === 1) {
     gStartTime = new Date()
-    gGame.secsPassed = setInterval(updateTimer, 37)
+    gGame.secsPassed = setInterval(gameTimer, 1000)
   }
   var currCell = gBoard[i][j]
 
@@ -175,10 +191,20 @@ function onCellClicked(elCell, i, j) {
   if (currCell.isRevealed) return
 
   if (currCell.gameElement === MINE) {
-    elCell.innerHTML = currCell.gameElement
-    gGame.isOn = false
-    gGame.revealedCount++
-    checkGameOver()
+    gLives--
+    var elLives = document.querySelector('.lives-count')
+    elLives.innerText = gLives
+    elCell.innerHTML = MINE
+
+    setTimeout(() => {
+      elCell.innerHTML = ''
+      currCell.isRevealed = false
+      if (gLives < 0) {
+        elLives.innerText = 'No lives left, Game over.'
+        gGame.isOn = false
+        checkGameOver()
+      }
+    }, 2000)
     return
   }
 
@@ -195,10 +221,6 @@ function onCellClicked(elCell, i, j) {
 }
 
 function onCellMarked(elCell, i, j) {
-  //     Called when a cell is right-
-  // clicked
-  // See how you can hide the context
-  // menu on right click
   if (!gGame.isOn) return
 
   var currCell = gBoard[i][j]
@@ -225,6 +247,7 @@ function onCellMarked(elCell, i, j) {
   }
 }
 
+// Checking if player won or lost
 function checkGameOver() {
   //   console.log('gLevel.SIZE', gLevel.SIZE * gLevel.SIZE)
   var elRestart = document.querySelector('.restart')
@@ -241,11 +264,11 @@ function checkGameOver() {
   if (!gGame.isOn) {
     elRestart.innerText = '😞'
     clearInterval(gGame.secsPassed)
-
     return
   }
 }
 
+// Revealing cells around clicked cell
 function expandReveal(board, elCell, i, j) {
   if (board[i][j].isRevealed) return
 
@@ -263,11 +286,15 @@ function expandReveal(board, elCell, i, j) {
       for (var y = j - 1; y <= j + 1; y++) {
         if (y < 0 || y >= board[0].length) continue
         if (x === i && y == j) continue
+
         //Taking care of neighbors pos
         var neighborCell = board[x][y]
         var elNeighbor = document.querySelector(`.${getClassName(x, y)}`)
 
         if (!neighborCell.isRevealed) {
+          // Doing the recursion thing,but it is currently bugged.
+          // expandReveal(board, elNeighbor, x, y)
+
           // console.log(board[x][y], 'x', x, 'y', y)
           elNeighbor.classList.add('clicked')
           elNeighbor.innerText = neighborCell.minesAroundCount
@@ -279,28 +306,53 @@ function expandReveal(board, elCell, i, j) {
   }
 }
 
-function getClassName(i, j) {
-  return `cell-${i}-${j}`
-}
-
+// Sets game level and mines as - EASY / MEDIUM / HARD
 function onSetLevel(level, mines) {
   gLevel.SIZE = level
   gLevel.MINES = mines
   init()
 }
 
-function getRandomIntInclusive(min, max) {
-  const minCeiled = Math.ceil(min)
-  const maxFloored = Math.floor(max)
-  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled)
-}
-
-function updateTimer() {
+// Calculate game time
+function gameTimer() {
   const elTimer = document.querySelector('.timer span')
+
   const elapsedTime = Date.now() - gStartTime
   const seconds = String(Math.floor((elapsedTime % (1000 * 60)) / 1000))
   const minutes = String(
     Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60))
   )
   elTimer.innerHTML = `${minutes.padStart(2, 0)} : ${seconds.padStart(2, 0)}`
+}
+
+// Announcing the player about a safe to click cell
+function safeClick() {
+  // Working pretty decent, Still need to fix -
+  //- If the empty location is a revealed cell need to reclick
+  // TODO : need to get empty location not including revealed cells also.
+  if (!gGame.isOn) return
+  var randomLocation = getEmptyRandomLocation(gBoard)
+
+  if (gSafeCounter > 0) {
+    var getCellClass = getClassName(randomLocation.i, randomLocation.j)
+    var elCell = document.querySelector(`.${getCellClass}`)
+    elCell.classList.add('safe')
+
+    setTimeout(() => {
+      elCell.classList.remove('safe')
+    }, 1500)
+
+    gSafeCounter--
+    var elCounter = document.querySelector('.safe-text span')
+    elCounter.innerHTML = gSafeCounter
+    return
+  }
+}
+function getRandomIntInclusive(min, max) {
+  const minCeiled = Math.ceil(min)
+  const maxFloored = Math.floor(max)
+  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled)
+}
+function getClassName(i, j) {
+  return `cell-${i}-${j}`
 }

@@ -68,3 +68,18 @@ td:hover {
 .button:hover {
   background-color: rgb(255, 255, 255, 0.5);
 }
+
+.safe {
+  background-color: rgb(144, 238, 144);
+}
+
+.safe-button {
+  font-family: 'Patrick Hand SC', cursive;
+  font-size: 15px;
+  background-color: rgb(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
