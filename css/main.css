@@ -37,6 +37,7 @@ td:hover {
 }
 
 .restart {
+  background: none;
   margin-bottom: 20px;
   font-size: 1.5rem;
   border: none;
@@ -82,4 +83,8 @@ td:hover {
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 20px;
+}
+
+.safe-button:hover {
+  background-color: rgb(255, 255, 255, 0.5);
 }

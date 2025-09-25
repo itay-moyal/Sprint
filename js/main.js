@@ -1,9 +1,23 @@
 'use strict'
 
+// Further Tasks Checklist
+// First click is never a Mine - X
+// Lives - V
+// The Smiley button - V
+
+// BONUSES Checklist
+// Add support for HINTS - X
+// Best Score - X
+// Full Expand - Working but buggy, need to think about a fix
+// Safe click - V
+// Dark Mode - X
+// Undo - X
+// Manually positioned mines - X
+// MEGA HINT - X
+// MINE EXTERMINATOR - X
+
 const MINE = '💣'
 const FLAG = '🚩'
-
-// Holds the current game state:
 
 // isOn: true when game is on
 // revealedCount: How many cells are revealed
@@ -26,10 +40,6 @@ var gLives
 var gStartGame
 var gSafeCounter
 
-// TO DO !!! add to cell clicks the glives logic,
-// if glives > 0 then things happen else game.ison = false
-// need to think.
-
 // Starting / Restarting game
 function init() {
   resetGameStats()
@@ -39,6 +49,7 @@ function init() {
   renderBoard(gBoard, '.board-container')
 
   clearInterval(gGame.secsPassed)
+  // console.log('gBoard', gBoard)
 }
 
 // Sets all the stats to starting point
@@ -85,7 +96,6 @@ function buildBoard(size) {
       }
     }
   }
-  addMines(board)
   return board
 }
 
@@ -102,7 +112,7 @@ function renderBoard(mat, selector) {
       onclick="onCellClicked(this,${i},${j})" 
       oncontextmenu="onCellMarked(this,${i},${j});return false;">`
       //   if (cell.gameElement !== MINE) strHTML += cell.minesAroundCount
-      if (cell.gameElement === MINE) strHTML += 'X'
+      // if (cell.gameElement === MINE) strHTML += 'X'
       strHTML += `</td>`
     }
     strHTML += '</tr>'
@@ -135,12 +145,10 @@ function setMinesNegsCount(board) {
     for (var j = 0; j < board[0].length; j++) {
       var currCell = board[i][j]
       var counter = mineCounter(i, j, board)
-
-      //   console.log(counter)
+      // console.log(counter)
       currCell.minesAroundCount = counter
     }
   }
-  return counter
 }
 
 // Placing mines randomly
@@ -157,7 +165,6 @@ function addMines(board) {
       activeMines++
     }
   }
-
   setMinesNegsCount(board)
 }
 
@@ -182,6 +189,9 @@ function onCellClicked(elCell, i, j) {
   if (!gGame.isOn) return
   gStartGame++
   if (gStartGame === 1) {
+    // Mines do spawn after the first click but first click can still be a mine...
+    // Couldn't think of a way to figure this out.
+    addMines(gBoard)
     gStartTime = new Date()
     gGame.secsPassed = setInterval(gameTimer, 1000)
   }
@@ -199,12 +209,13 @@ function onCellClicked(elCell, i, j) {
     setTimeout(() => {
       elCell.innerHTML = ''
       currCell.isRevealed = false
-      if (gLives < 0) {
-        elLives.innerText = 'No lives left, Game over.'
-        gGame.isOn = false
-        checkGameOver()
-      }
     }, 2000)
+
+    if (gLives < 0) {
+      elLives.innerText = 'No lives left, Game over.'
+      gGame.isOn = false
+      checkGameOver()
+    }
     return
   }
 
@@ -218,6 +229,7 @@ function onCellClicked(elCell, i, j) {
     elCell.innerText = currCell.minesAroundCount
   }
   checkGameOver()
+  // console.log('gBoard', gBoard)
 }
 
 function onCellMarked(elCell, i, j) {
@@ -327,9 +339,6 @@ function gameTimer() {
 
 // Announcing the player about a safe to click cell
 function safeClick() {
-  // Working pretty decent, Still need to fix -
-  //- If the empty location is a revealed cell need to reclick
-  // TODO : need to get empty location not including revealed cells also.
   if (!gGame.isOn) return
   var randomLocation = getEmptyRandomLocation(gBoard)
 
